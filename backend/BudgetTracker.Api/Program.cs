@@ -5,8 +5,20 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddOpenApi();
 builder.Services.AddControllers();
 builder.Services.AddScoped<ITransactionService, MockTransactionService>();
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend", policy =>
+    {
+        var allowedOrigins = builder.Configuration["AllowedOrigins"] ?? "http://localhost:5173";
+        policy.WithOrigins(allowedOrigins)
+              .AllowAnyHeader()
+              .AllowAnyMethod();              
+    });
+});
 
 var app = builder.Build();
+
+app.UseCors("AllowFrontend");
 
 app.UseExceptionHandler(errorApp =>
 {
