@@ -1,8 +1,16 @@
+using GoCardless;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
+
+builder.Services.AddSingleton<GoCardlessClient>(_ =>
+{
+    var accessToken = builder.Configuration["GoCardless:SandboxAccessToken"];
+    return GoCardlessClient.Create(accessToken, GoCardlessClient.Environment.SANDBOX);
+});
 
 var app = builder.Build();
 
