@@ -16,7 +16,7 @@ const error = ref<string | null>(null)
 
 onMounted(async () => {
   try {
-    const response = await fetch('https://localhost:7259/api/transactions')
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/api/transactions`)
     if (!response.ok) throw new Error('Failed to fetch transactions')
     transactions.value = await response.json()
   } catch (e) {

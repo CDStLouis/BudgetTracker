@@ -12,11 +12,11 @@ appsettings.Development.json
 # ========================
 # Vue.js / Node
 # ========================
-node_modules/
-dist/
-.env
-.env.local
-.env.*.local
+frontend/budget-tracker/.env
+frontend/budget-tracker/.env.local
+frontend/budget-tracker/.env.*.local
+frontend/budget-tracker/.env.development
+frontend/budget-tracker/.env.production
 
 # ========================
 # OS
