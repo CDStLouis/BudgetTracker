@@ -105,6 +105,20 @@ sequenceDiagram
 
 ---
 
+## 🎨 Wireframes
+
+Hand-drawn wireframes showing the two main views of the application:
+
+![Budget Tracker Wireframe](docs\wireframes\Budget_Tracker_Wireframe.png)
+
+**Table View** — month selector, monthly total, and a scrollable transaction table
+showing date, description, amount, category, and account provider.
+
+**Line Graph View** — same header with a cumulative spending line chart
+plotting spend over days in the selected month.
+
+---
+
 ## ✨ Features
 
 ### Current
@@ -113,11 +127,13 @@ sequenceDiagram
 - Error and loading states handled in the frontend
 
 ### Planned
+- Month selector with back/forward navigation
+- Monthly spending total
+- Table view: date, description, amount, category, account provider
+- Line graph view: cumulative daily spending over selected month
 - User authentication via Azure AD B2C
 - Real bank account integration via Open Banking API
-- Monthly spending summaries
 - Spending breakdown by category
-- Budget setting and tracking
 - Azure SQL database for persistence
 
 ---
@@ -152,3 +168,7 @@ Both the frontend and backend are automatically deployed to Azure on every push 
 
 - Frontend: Azure Static Web Apps
 - Backend: Azure App Service
+
+---
+## 📄 Licence
+MIT
