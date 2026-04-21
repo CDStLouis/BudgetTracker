@@ -111,8 +111,9 @@ Hand-drawn wireframes showing the two main views of the application:
 
 ![Budget Tracker Wireframe](docs/wireframes/Budget_Tracker_Wireframe.png)
 
-**Table View** — month selector, monthly total, and a scrollable transaction table
-showing date, description, amount, category, and account provider.
+**Table View** — month selector, monthly total, and transactions grouped 
+by date. Each row shows a category icon, description and amount. 
+Tapping a row reveals full details including date, amount and account provider.
 
 **Line Graph View** — same header with a cumulative spending line chart
 plotting spend over days in the selected month.
@@ -129,7 +130,8 @@ plotting spend over days in the selected month.
 ### Planned
 - Month selector with back/forward navigation
 - Monthly spending total
-- Table view: date, description, amount, category, account provider
+- Table view: transactions grouped by date, with category icon, description and amount per row
+- Transaction detail view: full details revealed on tap (date, amount, account provider)
 - Line graph view: cumulative daily spending over selected month
 - User authentication via Azure AD B2C
 - Real bank account integration via Open Banking API
