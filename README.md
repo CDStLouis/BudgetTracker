@@ -109,7 +109,7 @@ sequenceDiagram
 
 Hand-drawn wireframes showing the two main views of the application:
 
-![Budget Tracker Wireframe](docs\wireframes\Budget_Tracker_Wireframe.png)
+![Budget Tracker Wireframe](docs/wireframes/Budget_Tracker_Wireframe.png)
 
 **Table View** — month selector, monthly total, and a scrollable transaction table
 showing date, description, amount, category, and account provider.
