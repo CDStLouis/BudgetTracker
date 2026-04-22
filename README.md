@@ -112,7 +112,7 @@ Hand-drawn wireframes showing the two main views of the application:
 ![Budget Tracker Wireframe](docs/wireframes/Budget_Tracker_Wireframe.png)
 
 **Table View** — month selector, monthly total, and transactions grouped 
-by date. Each row shows a category icon, description and amount (+ green for income, - red for outgoing). 
+by date. Each row shows a category icon, description and amount (+ green for income, - red for expense). 
 Tapping a row reveals full details including date, amount and account provider.
 
 **Line Graph View** — same header with a cumulative spending line chart
