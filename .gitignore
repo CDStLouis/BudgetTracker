@@ -17,6 +17,9 @@ frontend/budget-tracker/.env.local
 frontend/budget-tracker/.env.*.local
 frontend/budget-tracker/.env.development
 frontend/budget-tracker/.env.production
+frontend/budget-tracker/node_modules/
+frontend/budget-tracker/dist/
+frontend/budget-tracker/*.node
 
 # ========================
 # OS
