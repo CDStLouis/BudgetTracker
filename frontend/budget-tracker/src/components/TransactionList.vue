@@ -1,41 +1,31 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import DateGroup, { type DateGroupTransaction } from './DateGroup.vue'
 
-interface Transaction {
+interface TransactionGroup {
   id: string
-  date: string
-  description: string
-  amount: number
-  category: string
-  accountName: string
+  dateLabel: string
+  transactions: DateGroupTransaction[]
 }
 
-const transactions = ref<Transaction[]>([])
-const loading = ref(true)
-const error = ref<string | null>(null)
+defineProps<{
+  groups: TransactionGroup[]
+}>()
 
-onMounted(async () => {
-  try {
-    const response = await fetch(`${import.meta.env.VITE_API_URL}/api/transactions`)
-    if (!response.ok) throw new Error('Failed to fetch transactions')
-    transactions.value = await response.json()
-  } catch (e) {
-    error.value = 'Could not load transactions'
-  } finally {
-    loading.value = false
-  }
-})
+const emit = defineEmits<{
+  selectTransaction: [id: string]
+}>()
 </script>
 
 <template>
-  <div>
-    <h1>Transactions</h1>
-    <p v-if="loading">Loading...</p>
-    <p v-else-if="error">{{ error }}</p>
-    <ul v-else>
-      <li v-for="transaction in transactions" :key="transaction.id">
-        {{ transaction.date }} - {{ transaction.description }} - {{ transaction.amount }}
-      </li>
-    </ul>
+  <div class="h-full overflow-y-auto px-2 pb-8 pt-2">
+    <div class="flex flex-col gap-6">
+      <DateGroup
+        v-for="group in groups"
+        :key="group.id"
+        :date-label="group.dateLabel"
+        :transactions="group.transactions"
+        @select-transaction="emit('selectTransaction', $event)"
+      />
+    </div>
   </div>
 </template>

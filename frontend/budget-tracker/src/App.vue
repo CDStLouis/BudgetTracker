@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import TransactionList from './components/TransactionList.vue'
+import TransactionsView from './views/TransactionsView.vue'
 </script>
 
 <template>
-  <TransactionList />
+  <TransactionsView />
 </template>
