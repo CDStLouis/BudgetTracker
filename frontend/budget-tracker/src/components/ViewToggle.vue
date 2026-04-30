@@ -9,24 +9,24 @@ const emit = defineEmits<{
   change: [view: 'table' | 'graph']
 }>()
 
-const baseButtonClass =
-  'flex h-full w-1/2 items-center justify-center border border-[#b3a8a8] text-black transition'
+const baseButtonClass = 'flex h-full w-1/2 items-center justify-center transition'
 </script>
 
 <template>
-  <div class="mx-auto flex h-11 w-fit rounded-lg border border-[#b3a8a8] bg-[#d2d2d2] p-0.5">
+  <div class="mx-auto flex h-11 w-fit overflow-hidden rounded-lg border border-[#b3a8a8] bg-[#d2d2d2]">
     <button
       type="button"
       aria-label="Table view"
       :class="[
         baseButtonClass,
+        'border-r border-[#b3a8a8]',
         props.activeView === 'table'
-          ? 'rounded-l-md bg-[rgba(179,168,168,0.2)] shadow-[inset_0_3px_4px_rgba(0,0,0,0.15)]'
-          : 'rounded-l-md bg-[#d9d9d9]'
+          ? 'bg-[#eeeeee] text-black shadow-[inset_0_3px_4px_rgba(0,0,0,0.15)]'
+          : 'bg-[#d2d2d2] text-[#808080]'
       ]"
       @click="emit('change', 'table')"
     >
-      <Table2 class="h-5 w-5" />
+      <Table2 class="h-6 w-10" />
     </button>
 
     <button
@@ -35,12 +35,12 @@ const baseButtonClass =
       :class="[
         baseButtonClass,
         props.activeView === 'graph'
-          ? 'rounded-r-md bg-[rgba(179,168,168,0.2)] shadow-[inset_0_3px_4px_rgba(0,0,0,0.15)]'
-          : 'rounded-r-md bg-[#d9d9d9]'
+          ? 'bg-[#eeeeee] text-black shadow-[inset_0_3px_4px_rgba(0,0,0,0.15)]'
+          : 'bg-[#d2d2d2] text-[#808080]'
       ]"
       @click="emit('change', 'graph')"
     >
-      <ChartLine class="h-5 w-5" />
+      <ChartLine class="h-6 w-10" />
     </button>
   </div>
 </template>
