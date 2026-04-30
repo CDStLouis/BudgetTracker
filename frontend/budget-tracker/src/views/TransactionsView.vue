@@ -3,6 +3,8 @@ import { computed, ref } from 'vue'
 import MonthSelector from '../components/MonthSelector.vue'
 import TransactionList from '../components/TransactionList.vue'
 import ViewToggle from '../components/ViewToggle.vue'
+import LineGraphView from './LineGraphView.vue'
+import TransactionDetailView from './TransactionDetailView.vue'
 
 interface TransactionGroup {
   id: string
@@ -13,10 +15,15 @@ interface TransactionGroup {
     category: string
     amount: number
     type: 'expense' | 'income'
+    fullDate: string
+    time: string
+    account: string
   }[]
 }
 
 const activeView = ref<'table' | 'graph'>('table')
+const activeScreen = ref<'transactions' | 'detail'>('transactions')
+const selectedTransactionId = ref<string | null>(null)
 const displayedMonth = ref(new Date(2026, 0, 1))
 
 const currentMonthStart = new Date()
@@ -44,18 +51,34 @@ const spendingLabel = computed(() =>
   spendingTotal.value.toLocaleString('en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 )
 
+const selectedTransaction = computed(() =>
+  transactionGroups.value.flatMap((group) => group.transactions).find((tx) => tx.id === selectedTransactionId.value)
+)
+
 const transactionGroups = ref<TransactionGroup[]>([
   {
     id: 'wednesday-14th',
     dateLabel: 'Wednesday 14th',
     transactions: [
-      { id: 'aldi', description: 'Aldi', category: 'Groceries', amount: 40.39, type: 'expense' },
+      {
+        id: 'aldi',
+        description: 'Aldi',
+        category: 'Groceries',
+        amount: 40.39,
+        type: 'expense',
+        fullDate: 'Wednesday 14th Jan 2026',
+        time: '14:30',
+        account: 'Santander'
+      },
       {
         id: 'netflix',
         description: 'Netflix',
         category: 'Entertainment',
         amount: 15.99,
-        type: 'expense'
+        type: 'expense',
+        fullDate: 'Wednesday 14th Jan 2026',
+        time: '09:12',
+        account: 'Monzo'
       }
     ]
   },
@@ -68,22 +91,46 @@ const transactionGroups = ref<TransactionGroup[]>([
         description: 'Gym',
         category: 'Health & Fitness',
         amount: 20,
-        type: 'expense'
+        type: 'expense',
+        fullDate: 'Monday 12th Jan 2026',
+        time: '18:45',
+        account: 'Santander'
       },
-      { id: 'salary', description: 'Salary', category: 'Income', amount: 3000, type: 'income' }
+      {
+        id: 'salary',
+        description: 'Salary',
+        category: 'Income',
+        amount: 3000,
+        type: 'income',
+        fullDate: 'Monday 12th Jan 2026',
+        time: '08:00',
+        account: 'Santander'
+      }
     ]
   },
   {
     id: 'friday-9th',
     dateLabel: 'Friday 9th',
     transactions: [
-      { id: 'nandos', description: "Nando's", category: 'Eating out', amount: 25, type: 'expense' },
+      {
+        id: 'nandos',
+        description: "Nando's",
+        category: 'Eating out',
+        amount: 25,
+        type: 'expense',
+        fullDate: 'Friday 9th Jan 2026',
+        time: '20:15',
+        account: 'Monzo'
+      },
       {
         id: 'trainline',
         description: 'Trainline',
         category: 'Transport',
         amount: 8.99,
-        type: 'expense'
+        type: 'expense',
+        fullDate: 'Friday 9th Jan 2026',
+        time: '07:52',
+        account: 'Santander'
       }
     ]
   }
@@ -99,17 +146,38 @@ const goToNextMonth = () => {
 }
 
 const onSelectTransaction = (id: string) => {
-  // Placeholder for future Vue Router navigation to a transaction detail screen.
-  console.log(`Selected transaction: ${id}`)
+  selectedTransactionId.value = id
+  activeScreen.value = 'detail'
 }
 
 const onToggleView = (view: 'table' | 'graph') => {
   activeView.value = view
+  activeScreen.value = 'transactions'
+}
+
+const onBackFromDetail = () => {
+  activeScreen.value = 'transactions'
 }
 </script>
 
 <template>
-  <main class="mx-auto flex min-h-screen w-full max-w-md flex-col bg-[#f6f9ff]">
+  <TransactionDetailView
+    v-if="activeScreen === 'detail' && selectedTransaction"
+    :transaction="selectedTransaction"
+    @back="onBackFromDetail"
+  />
+
+  <LineGraphView
+    v-else-if="activeView === 'graph'"
+    :month-label="monthLabel"
+    :is-current-month="isCurrentMonth"
+    :spending-label="spendingLabel"
+    @prev-month="goToPreviousMonth"
+    @next-month="goToNextMonth"
+    @change-view="onToggleView"
+  />
+
+  <main v-else class="mx-auto flex min-h-screen w-full max-w-md flex-col bg-[#f6f9ff]">
     <div class="h-14 w-full bg-[rgba(35,6,248,0.15)]" />
     <section class="flex flex-1 flex-col gap-2.5 p-2.5">
       <div class="flex flex-col gap-2.5">
@@ -131,17 +199,9 @@ const onToggleView = (view: 'table' | 'graph') => {
       </div>
 
       <TransactionList
-        v-if="activeView === 'table'"
         :groups="transactionGroups"
         @select-transaction="onSelectTransaction"
       />
-
-      <div
-        v-else
-        class="mt-2 flex h-full min-h-[220px] items-center justify-center rounded-[10px] border border-[#b3a8a8] bg-white p-6 text-center text-sm text-[#706161]"
-      >
-        Graph view placeholder (wire this to the future graph route/page).
-      </div>
     </section>
   </main>
 </template>

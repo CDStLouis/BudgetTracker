@@ -7,6 +7,9 @@ export interface DateGroupTransaction {
   category: string
   amount: number
   type: 'expense' | 'income'
+  fullDate?: string
+  time?: string
+  account?: string
 }
 
 defineProps<{
