@@ -24,17 +24,11 @@ interface TransactionGroup {
 const activeView = ref<'table' | 'graph'>('table')
 const activeScreen = ref<'transactions' | 'detail'>('transactions')
 const selectedTransactionId = ref<string | null>(null)
-const displayedMonth = ref(new Date(2026, 0, 1))
-
-const currentMonthStart = new Date()
-currentMonthStart.setDate(1)
-currentMonthStart.setHours(0, 0, 0, 0)
-
-const isCurrentMonth = computed(
-  () =>
-    displayedMonth.value.getMonth() === currentMonthStart.getMonth() &&
-    displayedMonth.value.getFullYear() === currentMonthStart.getFullYear()
-)
+const availableMonths = [new Date(2026, 0, 1)]
+const activeMonthIndex = ref(0)
+const displayedMonth = computed(() => availableMonths[activeMonthIndex.value])
+const canGoToPreviousMonth = computed(() => activeMonthIndex.value > 0)
+const canGoToNextMonth = computed(() => activeMonthIndex.value < availableMonths.length - 1)
 
 const monthLabel = computed(() =>
   displayedMonth.value.toLocaleDateString('en-GB', { month: 'short', year: 'numeric' })
@@ -137,12 +131,13 @@ const transactionGroups = ref<TransactionGroup[]>([
 ])
 
 const goToPreviousMonth = () => {
-  displayedMonth.value = new Date(displayedMonth.value.getFullYear(), displayedMonth.value.getMonth() - 1, 1)
+  if (!canGoToPreviousMonth.value) return
+  activeMonthIndex.value -= 1
 }
 
 const goToNextMonth = () => {
-  if (isCurrentMonth.value) return
-  displayedMonth.value = new Date(displayedMonth.value.getFullYear(), displayedMonth.value.getMonth() + 1, 1)
+  if (!canGoToNextMonth.value) return
+  activeMonthIndex.value += 1
 }
 
 const onSelectTransaction = (id: string) => {
@@ -170,7 +165,8 @@ const onBackFromDetail = () => {
   <LineGraphView
     v-else-if="activeView === 'graph'"
     :month-label="monthLabel"
-    :is-current-month="isCurrentMonth"
+    :disable-previous-month="!canGoToPreviousMonth"
+    :disable-next-month="!canGoToNextMonth"
     :spending-label="spendingLabel"
     @prev-month="goToPreviousMonth"
     @next-month="goToNextMonth"
@@ -183,7 +179,8 @@ const onBackFromDetail = () => {
       <div class="flex flex-col gap-2.5">
         <MonthSelector
           :month-label="monthLabel"
-          :is-current-month="isCurrentMonth"
+          :disable-previous="!canGoToPreviousMonth"
+          :disable-next="!canGoToNextMonth"
           @prev="goToPreviousMonth"
           @next="goToNextMonth"
         />

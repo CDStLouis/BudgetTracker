@@ -4,7 +4,8 @@ import ViewToggle from '../components/ViewToggle.vue'
 
 defineProps<{
   monthLabel: string
-  isCurrentMonth: boolean
+  disablePreviousMonth: boolean
+  disableNextMonth: boolean
   spendingLabel: string
 }>()
 
@@ -22,7 +23,8 @@ const emit = defineEmits<{
       <div class="flex flex-col gap-2.5">
         <MonthSelector
           :month-label="monthLabel"
-          :is-current-month="isCurrentMonth"
+          :disable-previous="disablePreviousMonth"
+          :disable-next="disableNextMonth"
           @prev="emit('prevMonth')"
           @next="emit('nextMonth')"
         />

@@ -3,7 +3,8 @@ import { ChevronLeft, ChevronRight } from 'lucide-vue-next'
 
 defineProps<{
   monthLabel: string
-  isCurrentMonth?: boolean
+  disablePrevious?: boolean
+  disableNext?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -18,6 +19,7 @@ const emit = defineEmits<{
       type="button"
       class="flex h-12 w-12 items-center justify-center justify-self-start rounded-full border border-[#b3a8a8] bg-white text-black transition disabled:cursor-not-allowed disabled:bg-[#d9d9d9] disabled:text-[#808080]"
       aria-label="Previous month"
+      :disabled="disablePrevious"
       @click="emit('prev')"
     >
       <ChevronLeft class="h-5 w-5" />
@@ -29,7 +31,7 @@ const emit = defineEmits<{
       type="button"
       class="flex h-12 w-12 items-center justify-center justify-self-end rounded-full border border-[#b3a8a8] bg-white text-black transition disabled:cursor-not-allowed disabled:bg-[#d9d9d9] disabled:text-[#808080]"
       aria-label="Next month"
-      :disabled="isCurrentMonth"
+      :disabled="disableNext"
       @click="emit('next')"
     >
       <ChevronRight class="h-5 w-5" />
