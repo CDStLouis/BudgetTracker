@@ -38,7 +38,7 @@ const emit = defineEmits<{
       </div>
 
       <div class="mt-5 rounded-[10px] border border-[#b3a8a8] bg-white p-3">
-        <svg viewBox="0 0 350 300" class="h-auto w-full">
+        <svg viewBox="0 0 350 300" class="h-auto w-full overflow-visible">
           <g stroke="#d0d4db" stroke-width="1">
             <line x1="45" y1="245" x2="330" y2="245" />
             <line x1="45" y1="205" x2="330" y2="205" />
@@ -68,7 +68,9 @@ const emit = defineEmits<{
           </g>
 
           <text x="178" y="282" text-anchor="middle" fill="#54555a" font-size="12">Days</text>
-          <text x="15" y="170" fill="#54555a" font-size="12" transform="rotate(-90 15 170)">Spent</text>
+          <text x="6" y="165" text-anchor="middle" fill="#54555a" font-size="12" transform="rotate(-90 6 165)">
+            Spent
+          </text>
         </svg>
       </div>
     </section>
