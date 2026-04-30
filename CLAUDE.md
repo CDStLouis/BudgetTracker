@@ -67,3 +67,13 @@ Two GitHub Actions workflows:
 - **Backend**: `dotnet build` (Release) → deploys to Azure App Service
 
 Both trigger on push to `main`.
+
+## Design & Styling
+
+- **CSS framework**: Tailwind CSS (utility-first, no component library)
+- **Icons**: `lucide-vue-next` — use Lucide icons throughout, not emojis or other libraries
+- **Design**: Mobile-first. Base styles target ~390px width.
+- **Transaction row colours**: amount text is red (`text-red-500`) for expenses, green (`text-green-500`) for income
+- **Category icons**: each transaction category maps to a Lucide icon (e.g. shopping-basket for Groceries, tv for Entertainment, dumbbell for Health & Fitness, banknote for Income)
+- **Vue Router**: not yet installed — add it when building navigation to the detail page
+- **Component naming**: PascalCase `.vue` files. Props use camelCase, emit events use kebab-case
