@@ -120,21 +120,39 @@ plotting spend over days in the selected month.
 
 ---
 
+## 🎨 Design
+
+The UI was designed in Figma before implementation, following a mobile-first approach.
+
+[View Figma Design](https://www.figma.com/design/P9OVt7zHkvlZZkgkuLV25F/Budget-Tracker?node-id=0-1&t=FV0f9lRPKh8CeMVw-1)
+
+![Figma Design](docs/screenshots/Figma_Design.png)
+
+**Key design decisions:**
+- Transactions grouped by date with category icons (Lucide)
+- Red/green amount colouring for expenses and income  
+- Segmented control toggle between table and line graph views
+- Progressive disclosure — tap a row to reveal full transaction details
+- Cumulative spending line graph for monthly trend visibility
+
+---
+
 ## ✨ Features
 
 ### Current
-- Transaction list fetched from API and displayed in the browser
-- Mock transaction data with date, description, amount and category
+- Transactions fetched from backend API and grouped by date
+- Category icons per transaction type using Lucide Vue Next
+- Red/green amount colouring for expenses and income
+- Month selector with back/forward navigation
+- Monthly spending total
+- Table view and line graph view toggle
+- Transaction detail page
+- Vitest unit tests with CI integration via GitHub Actions
 - Error and loading states handled in the frontend
 
 ### Planned
-- Month selector with back/forward navigation
-- Monthly spending total
-- Table view: transactions grouped by date, with category icon, description and amount per row
-- Transaction detail view: full details revealed on tap (date, amount, account provider)
-- Line graph view: cumulative daily spending over selected month
+- Real bank account integration via Open Banking API (TrueLayer)
 - User authentication via Azure AD B2C
-- Real bank account integration via Open Banking API
 - Spending breakdown by category
 - Azure SQL database for persistence
 
