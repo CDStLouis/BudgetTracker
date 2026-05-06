@@ -68,6 +68,25 @@ const spendingLabel = computed(() =>
   spendingTotal.value.toLocaleString('en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 )
 
+const dailySpending = computed(() =>
+  transactionGroups.value
+    .map((group) => {
+      const date = new Date(group.id)
+      if (Number.isNaN(date.getTime())) return null
+
+      const amount = group.transactions
+        .filter((tx) => tx.type === 'expense')
+        .reduce((total, tx) => total + tx.amount, 0)
+
+      return {
+        day: date.getDate(),
+        amount
+      }
+    })
+    .filter((point): point is { day: number; amount: number } => point !== null)
+    .sort((a, b) => a.day - b.day)
+)
+
 const selectedTransaction = computed(() =>
   allTransactionGroups.value.flatMap((group) => group.transactions).find((tx) => tx.id === selectedTransactionId.value)
 )
@@ -197,6 +216,7 @@ const onBackFromDetail = () => {
     :disable-previous-month="!canGoToPreviousMonth"
     :disable-next-month="!canGoToNextMonth"
     :spending-label="spendingLabel"
+    :daily-spending="dailySpending"
     @prev-month="goToPreviousMonth"
     @next-month="goToNextMonth"
     @change-view="onToggleView"
