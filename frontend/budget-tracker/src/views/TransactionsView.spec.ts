@@ -6,19 +6,27 @@ describe('TransactionsView month availability', () => {
   const mockApiResponse = [
     {
       id: 'tx-1',
-      date: '2026-01-14T14:30:00.000Z',
+      dateUtc: '2026-01-14T14:30:00.000Z',
       description: 'Aldi',
       category: 'Groceries',
-      amount: -40.39,
-      accountName: 'Santander'
+      signedAmount: -40.39,
+      absoluteAmount: 40.39,
+      type: 'expense',
+      accountName: 'Santander',
+      monthKey: '2026-01',
+      dateKey: '2026-01-14'
     },
     {
       id: 'tx-2',
-      date: '2026-01-14T09:12:00.000Z',
+      dateUtc: '2026-01-14T09:12:00.000Z',
       description: 'Netflix',
       category: 'Entertainment',
-      amount: -15.99,
-      accountName: 'Monzo'
+      signedAmount: -15.99,
+      absoluteAmount: 15.99,
+      type: 'expense',
+      accountName: 'Monzo',
+      monthKey: '2026-01',
+      dateKey: '2026-01-14'
     }
   ]
 
@@ -81,19 +89,27 @@ describe('TransactionsView month navigation', () => {
         json: async () => [
           {
             id: 'tx-may',
-            date: '2026-05-10T12:00:00.000Z',
+            dateUtc: '2026-05-10T12:00:00.000Z',
             description: 'Salary',
             category: 'Income',
-            amount: 1000,
-            accountName: 'Santander'
+            signedAmount: 1000,
+            absoluteAmount: 1000,
+            type: 'income',
+            accountName: 'Santander',
+            monthKey: '2026-05',
+            dateKey: '2026-05-10'
           },
           {
             id: 'tx-mar',
-            date: '2026-03-05T09:00:00.000Z',
+            dateUtc: '2026-03-05T09:00:00.000Z',
             description: 'Groceries',
             category: 'Groceries',
-            amount: -30,
-            accountName: 'Monzo'
+            signedAmount: -30,
+            absoluteAmount: 30,
+            type: 'expense',
+            accountName: 'Monzo',
+            monthKey: '2026-03',
+            dateKey: '2026-03-05'
           }
         ]
       })
@@ -132,27 +148,39 @@ describe('TransactionsView month navigation', () => {
         json: async () => [
           {
             id: 'tx-may',
-            date: '2026-05-20T12:00:00.000Z',
+            dateUtc: '2026-05-20T12:00:00.000Z',
             description: 'Salary',
             category: 'Income',
-            amount: 2500,
-            accountName: 'Santander'
+            signedAmount: 2500,
+            absoluteAmount: 2500,
+            type: 'income',
+            accountName: 'Santander',
+            monthKey: '2026-05',
+            dateKey: '2026-05-20'
           },
           {
             id: 'tx-apr',
-            date: '2026-04-12T10:00:00.000Z',
+            dateUtc: '2026-04-12T10:00:00.000Z',
             description: 'Rent',
             category: 'Housing',
-            amount: -900,
-            accountName: 'Santander'
+            signedAmount: -900,
+            absoluteAmount: 900,
+            type: 'expense',
+            accountName: 'Santander',
+            monthKey: '2026-04',
+            dateKey: '2026-04-12'
           },
           {
             id: 'tx-mar',
-            date: '2026-03-03T09:00:00.000Z',
+            dateUtc: '2026-03-03T09:00:00.000Z',
             description: 'Groceries',
             category: 'Groceries',
-            amount: -42,
-            accountName: 'Monzo'
+            signedAmount: -42,
+            absoluteAmount: 42,
+            type: 'expense',
+            accountName: 'Monzo',
+            monthKey: '2026-03',
+            dateKey: '2026-03-03'
           }
         ]
       })

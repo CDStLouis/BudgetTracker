@@ -1,4 +1,5 @@
-﻿using BudgetTracker.Api.Services;
+﻿using BudgetTracker.Api.Contracts;
+using BudgetTracker.Api.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BudgetTracker.Api.Controllers
@@ -18,7 +19,27 @@ namespace BudgetTracker.Api.Controllers
         public async Task<IActionResult> GetTransactions()
         {
             var transactions = await _transactionService.GetTransactionsAsync();
-            return Ok(transactions);
+            var response = transactions
+                .Select(transaction =>
+                {
+                    var date = transaction.Date;
+                    return new TransactionDto
+                    {
+                        Id = transaction.Id,
+                        DateUtc = DateTime.SpecifyKind(date, DateTimeKind.Utc),
+                        Description = transaction.Description,
+                        SignedAmount = transaction.Amount,
+                        AbsoluteAmount = Math.Abs(transaction.Amount),
+                        Type = transaction.Amount < 0 ? "expense" : "income",
+                        Category = transaction.Category,
+                        AccountName = transaction.AccountName,
+                        MonthKey = date.ToString("yyyy-MM"),
+                        DateKey = date.ToString("yyyy-MM-dd")
+                    };
+                })
+                .OrderByDescending(transaction => transaction.DateUtc);
+
+            return Ok(response);
         }
 
     }

@@ -18,16 +18,21 @@ interface TransactionGroup {
     fullDate: string
     time: string
     account: string
+    sortDate: string
   }[]
 }
 
 interface ApiTransaction {
   id: string
-  date: string
+  dateUtc: string
   description: string
-  amount: number
+  signedAmount: number
+  absoluteAmount: number
+  type: 'expense' | 'income'
   category: string
   accountName: string
+  monthKey: string
+  dateKey: string
 }
 
 const activeView = ref<'table' | 'graph'>('table')
@@ -108,9 +113,6 @@ const formatDateLabel = (date: Date) => {
 const formatFullDate = (date: Date) =>
   `${formatDateLabel(date)} ${date.toLocaleDateString('en-GB', { month: 'short', year: 'numeric' })}`
 
-const toDateKey = (date: Date) =>
-  `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`
-
 const loadTransactions = async () => {
   try {
     const response = await fetch('/api/transactions')
@@ -121,31 +123,29 @@ const loadTransactions = async () => {
     const months = new Set<string>()
 
     for (const tx of apiTransactions) {
-      const date = new Date(tx.date)
+      const date = new Date(tx.dateUtc)
       if (Number.isNaN(date.getTime())) continue
 
-      const dateKey = toDateKey(date)
-      const monthKey = `${date.getFullYear()}-${date.getMonth()}`
-      months.add(monthKey)
+      months.add(tx.monthKey)
 
-      const normalizedAmount = Math.abs(tx.amount)
       const normalized = {
         id: tx.id,
         description: tx.description,
         category: tx.category,
-        amount: normalizedAmount,
-        type: tx.amount < 0 ? ('expense' as const) : ('income' as const),
+        amount: tx.absoluteAmount,
+        type: tx.type,
         fullDate: formatFullDate(date),
         time: date.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', hour12: false }),
-        account: tx.accountName
+        account: tx.accountName,
+        sortDate: tx.dateUtc
       }
 
-      const existing = byDate.get(dateKey)
+      const existing = byDate.get(tx.dateKey)
       if (existing) {
         existing.transactions.push(normalized)
       } else {
-        byDate.set(dateKey, {
-          id: dateKey,
+        byDate.set(tx.dateKey, {
+          id: tx.dateKey,
           dateLabel: formatDateLabel(date),
           transactions: [normalized]
         })
@@ -156,14 +156,14 @@ const loadTransactions = async () => {
       .sort(([a], [b]) => b.localeCompare(a))
       .map(([, group]) => ({
         ...group,
-        transactions: group.transactions.sort((a, b) => b.fullDate.localeCompare(a.fullDate))
+        transactions: group.transactions.sort((a, b) => b.sortDate.localeCompare(a.sortDate))
       }))
 
     allTransactionGroups.value = sortedGroups
     availableMonths.value = Array.from(months)
       .map((monthKey) => {
         const [year, month] = monthKey.split('-').map(Number)
-        return new Date(year, month, 1)
+        return new Date(year, month - 1, 1)
       })
       .sort((a, b) => b.getTime() - a.getTime())
 

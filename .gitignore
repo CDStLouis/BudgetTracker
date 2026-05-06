@@ -3,6 +3,10 @@
 # ========================
 bin/
 obj/
+*.dll
+*.exe
+*.pdb
+bin-temp-verify/
 *.user
 *.suo
 .vs/
