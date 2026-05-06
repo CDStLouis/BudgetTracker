@@ -9,7 +9,12 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
     {
-        var allowedOrigins = builder.Configuration["AllowedOrigins"] ?? "http://localhost:5173";
+        var configuredOrigins = builder.Configuration["AllowedOrigins"] ?? "http://localhost:5173";
+        var allowedOrigins = configuredOrigins
+            .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .Select(origin => origin.TrimEnd('/'))
+            .ToArray();
+
         policy.WithOrigins(allowedOrigins)
               .AllowAnyHeader()
               .AllowAnyMethod();              

@@ -35,6 +35,10 @@ interface ApiTransaction {
   dateKey: string
 }
 
+const configuredApiUrl = (import.meta.env.VITE_API_URL as string | undefined)?.replace(/\/+$/, '') ?? ''
+const apiBaseUrl = import.meta.env.DEV ? '' : configuredApiUrl
+const transactionsEndpoint = `${apiBaseUrl}/api/transactions`
+
 const activeView = ref<'table' | 'graph'>('table')
 const activeScreen = ref<'transactions' | 'detail'>('transactions')
 const selectedTransactionId = ref<string | null>(null)
@@ -115,7 +119,7 @@ const formatFullDate = (date: Date) =>
 
 const loadTransactions = async () => {
   try {
-    const response = await fetch('/api/transactions')
+    const response = await fetch(transactionsEndpoint)
     if (!response.ok) throw new Error(`Failed to fetch transactions: ${response.status}`)
 
     const apiTransactions = (await response.json()) as ApiTransaction[]
