@@ -59,24 +59,37 @@ const xTicks = computed(() => {
   })
 })
 
-const linePath = computed(() => {
-  if (props.dailySpending.length === 0) return ''
+const plottedPoints = computed(() => {
+  if (props.dailySpending.length === 0) return []
 
   const sorted = [...props.dailySpending].sort((a, b) => a.day - b.day)
-  return sorted
-    .map((point, index) => {
-      const xRatio = maxDay.value === 1 ? 0 : (point.day - 1) / (maxDay.value - 1)
-      const yRatio = maxAmount.value === 0 ? 0 : point.amount / maxAmount.value
-      const x = chart.left + (chart.right - chart.left) * xRatio
-      const y = chart.bottom - (chart.bottom - chart.top) * yRatio
-      return `${index === 0 ? 'M' : 'L'}${x.toFixed(2)} ${y.toFixed(2)}`
-    })
+  return sorted.map((point) => {
+    const xRatio = maxDay.value === 1 ? 0 : (point.day - 1) / (maxDay.value - 1)
+    const yRatio = maxAmount.value === 0 ? 0 : point.amount / maxAmount.value
+    const x = chart.left + (chart.right - chart.left) * xRatio
+    const y = chart.bottom - (chart.bottom - chart.top) * yRatio
+    return { x, y }
+  })
+})
+
+const linePoints = computed(() => {
+  if (plottedPoints.value.length === 0) return []
+  return [{ x: chart.left, y: chart.bottom }, ...plottedPoints.value]
+})
+
+const linePath = computed(() => {
+  if (linePoints.value.length === 0) return ''
+
+  return linePoints.value
+    .map((point, index) => `${index === 0 ? 'M' : 'L'}${point.x.toFixed(2)} ${point.y.toFixed(2)}`)
     .join(' ')
 })
 
 const areaPath = computed(() => {
-  if (!linePath.value) return ''
-  return `${linePath.value} L${chart.right} ${chart.bottom} L${chart.left} ${chart.bottom} Z`
+  if (linePoints.value.length === 0) return ''
+
+  const lastPoint = linePoints.value[linePoints.value.length - 1]
+  return `${linePath.value} L${lastPoint.x.toFixed(2)} ${chart.bottom} L${chart.left} ${chart.bottom} Z`
 })
 </script>
 

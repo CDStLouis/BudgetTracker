@@ -48,4 +48,37 @@ describe('LineGraphView month selector wiring', () => {
     const updatedPath = wrapper.get('[data-testid="graph-line-path"]').attributes('d')
     expect(updatedPath).not.toBe(initialPath)
   })
+
+  it('anchors area and line at chart origin before first data point', () => {
+    const wrapper = mount(LineGraphView, {
+      props: {
+        monthLabel: 'Apr 2026',
+        disablePreviousMonth: false,
+        disableNextMonth: false,
+        spendingLabel: '200.00',
+        dailySpending: [
+          { day: 14, amount: 25 },
+          { day: 24, amount: 40 },
+          { day: 27, amount: 0 }
+        ]
+      }
+    })
+
+    const linePath = wrapper.get('[data-testid="graph-line-path"]').attributes('d') ?? ''
+    const areaPath = wrapper.get('[data-testid="graph-area-path"]').attributes('d') ?? ''
+
+    const firstPointMatch = linePath.match(/^M([0-9.]+) ([0-9.]+)/)
+    const lastPointMatch = linePath.match(/L([0-9.]+) ([0-9.]+)$/)
+
+    expect(firstPointMatch).not.toBeNull()
+    expect(lastPointMatch).not.toBeNull()
+
+    const firstX = firstPointMatch?.[1]
+    const firstY = firstPointMatch?.[2]
+    const lastX = lastPointMatch?.[1]
+    expect(firstX).toBe('45.00')
+    expect(firstY).toBe('245.00')
+    expect(areaPath).toContain(`L${lastX} 245`)
+    expect(areaPath).toContain(`L45 245`)
+  })
 })
