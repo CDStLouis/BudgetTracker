@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import MonthSelector from '../components/MonthSelector.vue'
 import TransactionList from '../components/TransactionList.vue'
 import ViewToggle from '../components/ViewToggle.vue'
@@ -21,18 +21,41 @@ interface TransactionGroup {
   }[]
 }
 
+interface ApiTransaction {
+  id: string
+  date: string
+  description: string
+  amount: number
+  category: string
+  accountName: string
+}
+
 const activeView = ref<'table' | 'graph'>('table')
 const activeScreen = ref<'transactions' | 'detail'>('transactions')
 const selectedTransactionId = ref<string | null>(null)
-const availableMonths = [new Date(2026, 0, 1)]
+const allTransactionGroups = ref<TransactionGroup[]>([])
+const availableMonths = ref<Date[]>([])
 const activeMonthIndex = ref(0)
-const displayedMonth = computed(() => availableMonths[activeMonthIndex.value])
-const canGoToPreviousMonth = computed(() => activeMonthIndex.value > 0)
-const canGoToNextMonth = computed(() => activeMonthIndex.value < availableMonths.length - 1)
+const displayedMonth = computed(() => availableMonths.value[activeMonthIndex.value] ?? null)
+const canGoToPreviousMonth = computed(() => activeMonthIndex.value < availableMonths.value.length - 1)
+const canGoToNextMonth = computed(() => activeMonthIndex.value > 0)
 
-const monthLabel = computed(() =>
-  displayedMonth.value.toLocaleDateString('en-GB', { month: 'short', year: 'numeric' })
-)
+const monthLabel = computed(() => {
+  if (!displayedMonth.value) return 'No transactions'
+  return displayedMonth.value.toLocaleDateString('en-GB', { month: 'short', year: 'numeric' })
+})
+
+const transactionGroups = computed(() => {
+  if (!displayedMonth.value) return []
+
+  const month = displayedMonth.value.getMonth()
+  const year = displayedMonth.value.getFullYear()
+
+  return allTransactionGroups.value.filter((group) => {
+    const groupDate = new Date(group.id)
+    return !Number.isNaN(groupDate.getTime()) && groupDate.getMonth() === month && groupDate.getFullYear() === year
+  })
+})
 
 const spendingTotal = computed(() =>
   transactionGroups.value
@@ -46,98 +69,104 @@ const spendingLabel = computed(() =>
 )
 
 const selectedTransaction = computed(() =>
-  transactionGroups.value.flatMap((group) => group.transactions).find((tx) => tx.id === selectedTransactionId.value)
+  allTransactionGroups.value.flatMap((group) => group.transactions).find((tx) => tx.id === selectedTransactionId.value)
 )
 
-const transactionGroups = ref<TransactionGroup[]>([
-  {
-    id: 'wednesday-14th',
-    dateLabel: 'Wednesday 14th',
-    transactions: [
-      {
-        id: 'aldi',
-        description: 'Aldi',
-        category: 'Groceries',
-        amount: 40.39,
-        type: 'expense',
-        fullDate: 'Wednesday 14th Jan 2026',
-        time: '14:30',
-        account: 'Santander'
-      },
-      {
-        id: 'netflix',
-        description: 'Netflix',
-        category: 'Entertainment',
-        amount: 15.99,
-        type: 'expense',
-        fullDate: 'Wednesday 14th Jan 2026',
-        time: '09:12',
-        account: 'Monzo'
+const toOrdinal = (day: number) => {
+  if (day >= 11 && day <= 13) return `${day}th`
+  const lastDigit = day % 10
+  if (lastDigit === 1) return `${day}st`
+  if (lastDigit === 2) return `${day}nd`
+  if (lastDigit === 3) return `${day}rd`
+  return `${day}th`
+}
+
+const formatDateLabel = (date: Date) => {
+  const weekday = date.toLocaleDateString('en-GB', { weekday: 'long' })
+  return `${weekday} ${toOrdinal(date.getDate())}`
+}
+
+const formatFullDate = (date: Date) =>
+  `${formatDateLabel(date)} ${date.toLocaleDateString('en-GB', { month: 'short', year: 'numeric' })}`
+
+const toDateKey = (date: Date) =>
+  `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`
+
+const loadTransactions = async () => {
+  try {
+    const response = await fetch('/api/transactions')
+    if (!response.ok) throw new Error(`Failed to fetch transactions: ${response.status}`)
+
+    const apiTransactions = (await response.json()) as ApiTransaction[]
+    const byDate = new Map<string, TransactionGroup>()
+    const months = new Set<string>()
+
+    for (const tx of apiTransactions) {
+      const date = new Date(tx.date)
+      if (Number.isNaN(date.getTime())) continue
+
+      const dateKey = toDateKey(date)
+      const monthKey = `${date.getFullYear()}-${date.getMonth()}`
+      months.add(monthKey)
+
+      const normalizedAmount = Math.abs(tx.amount)
+      const normalized = {
+        id: tx.id,
+        description: tx.description,
+        category: tx.category,
+        amount: normalizedAmount,
+        type: tx.amount < 0 ? ('expense' as const) : ('income' as const),
+        fullDate: formatFullDate(date),
+        time: date.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', hour12: false }),
+        account: tx.accountName
       }
-    ]
-  },
-  {
-    id: 'monday-12th',
-    dateLabel: 'Monday 12th',
-    transactions: [
-      {
-        id: 'gym',
-        description: 'Gym',
-        category: 'Health & Fitness',
-        amount: 20,
-        type: 'expense',
-        fullDate: 'Monday 12th Jan 2026',
-        time: '18:45',
-        account: 'Santander'
-      },
-      {
-        id: 'salary',
-        description: 'Salary',
-        category: 'Income',
-        amount: 3000,
-        type: 'income',
-        fullDate: 'Monday 12th Jan 2026',
-        time: '08:00',
-        account: 'Santander'
+
+      const existing = byDate.get(dateKey)
+      if (existing) {
+        existing.transactions.push(normalized)
+      } else {
+        byDate.set(dateKey, {
+          id: dateKey,
+          dateLabel: formatDateLabel(date),
+          transactions: [normalized]
+        })
       }
-    ]
-  },
-  {
-    id: 'friday-9th',
-    dateLabel: 'Friday 9th',
-    transactions: [
-      {
-        id: 'nandos',
-        description: "Nando's",
-        category: 'Eating out',
-        amount: 25,
-        type: 'expense',
-        fullDate: 'Friday 9th Jan 2026',
-        time: '20:15',
-        account: 'Monzo'
-      },
-      {
-        id: 'trainline',
-        description: 'Trainline',
-        category: 'Transport',
-        amount: 8.99,
-        type: 'expense',
-        fullDate: 'Friday 9th Jan 2026',
-        time: '07:52',
-        account: 'Santander'
-      }
-    ]
+    }
+
+    const sortedGroups = Array.from(byDate.entries())
+      .sort(([a], [b]) => b.localeCompare(a))
+      .map(([, group]) => ({
+        ...group,
+        transactions: group.transactions.sort((a, b) => b.fullDate.localeCompare(a.fullDate))
+      }))
+
+    allTransactionGroups.value = sortedGroups
+    availableMonths.value = Array.from(months)
+      .map((monthKey) => {
+        const [year, month] = monthKey.split('-').map(Number)
+        return new Date(year, month, 1)
+      })
+      .sort((a, b) => b.getTime() - a.getTime())
+
+    activeMonthIndex.value = 0
+  } catch (error) {
+    allTransactionGroups.value = []
+    availableMonths.value = []
+    activeMonthIndex.value = 0
+    console.error(error)
   }
-])
+}
+
+onMounted(loadTransactions)
 
 const goToPreviousMonth = () => {
   if (!canGoToPreviousMonth.value) return
-  activeMonthIndex.value -= 1
+  activeMonthIndex.value += 1
 }
 
 const goToNextMonth = () => {
   if (!canGoToNextMonth.value) return
-  activeMonthIndex.value += 1
+  activeMonthIndex.value -= 1
 }
 
 const onSelectTransaction = (id: string) => {
