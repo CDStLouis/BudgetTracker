@@ -26,10 +26,12 @@ builder.Services.AddCors(options =>
 builder.Services.AddDbContext<BudgetTrackerContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+builder.Services.AddResponseCaching();
+
 var app = builder.Build();
 
 app.UseCors("AllowFrontend");
-
+app.UseResponseCaching();
 app.UseExceptionHandler(errorApp =>
 {
     errorApp.Run(async context =>
