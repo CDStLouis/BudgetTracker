@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import {
-  ChefHat,
   ChevronRight,
-  CircleDollarSign,
+  Drama,
   Dumbbell,
-  Popcorn,
+  HandCoins,
   ShoppingBasket,
-  TramFront
+  TramFront,
+  Utensils
 } from 'lucide-vue-next'
 
 const props = defineProps<{
@@ -39,11 +39,11 @@ const iconComponent = computed(() => {
   const normalized = props.category.toLowerCase()
 
   if (normalized.includes('grocer')) return ShoppingBasket
-  if (normalized.includes('entertain')) return Popcorn
+  if (normalized.includes('entertain')) return Drama
   if (normalized.includes('health') || normalized.includes('fitness')) return Dumbbell
-  if (normalized.includes('income')) return CircleDollarSign
+  if (normalized.includes('income')) return HandCoins
   if (normalized.includes('transport')) return TramFront
-  if (normalized.includes('eat')) return ChefHat
+  if (normalized.includes('eat')) return Utensils
   return ShoppingBasket
 })
 </script>
@@ -59,8 +59,8 @@ const iconComponent = computed(() => {
     </div>
 
     <div class="min-w-0">
-      <p class="truncate text-[15px] font-medium leading-none text-black">{{ description }}</p>
-      <p class="mt-1 truncate text-[13px] leading-none text-[#706161]">{{ category }}</p>
+      <p class="truncate text-[15px] font-medium leading-tight text-black">{{ description }}</p>
+      <p class="mt-1 truncate text-[13px] leading-tight text-[#706161]">{{ category }}</p>
     </div>
 
     <p :class="['text-[15px] leading-none', amountClass]">{{ amountLabel }}</p>
