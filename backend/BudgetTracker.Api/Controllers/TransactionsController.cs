@@ -16,6 +16,7 @@ namespace BudgetTracker.Api.Controllers
         }
 
         [HttpGet]
+        [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
         public async Task<IActionResult> GetTransactions()
         {
             var transactions = await _transactionService.GetTransactionsAsync();
