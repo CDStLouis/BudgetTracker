@@ -2,9 +2,9 @@
 import { computed } from 'vue'
 import {
   ChevronRight,
+  Drama,
   Dumbbell,
   HandCoins,
-  Popcorn,
   ShoppingBasket,
   TramFront,
   Utensils
@@ -39,7 +39,7 @@ const iconComponent = computed(() => {
   const normalized = props.category.toLowerCase()
 
   if (normalized.includes('grocer')) return ShoppingBasket
-  if (normalized.includes('entertain')) return Popcorn
+  if (normalized.includes('entertain')) return Drama
   if (normalized.includes('health') || normalized.includes('fitness')) return Dumbbell
   if (normalized.includes('income')) return HandCoins
   if (normalized.includes('transport')) return TramFront
