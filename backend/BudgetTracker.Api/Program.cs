@@ -1,10 +1,12 @@
+using BudgetTracker.Api.Data;
 using BudgetTracker.Api.Services;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddOpenApi();
 builder.Services.AddControllers();
-builder.Services.AddScoped<ITransactionService, MockTransactionService>();
+builder.Services.AddScoped<ITransactionService, TransactionService>();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
@@ -20,6 +22,9 @@ builder.Services.AddCors(options =>
               .AllowAnyMethod();              
     });
 });
+
+builder.Services.AddDbContext<BudgetTrackerContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 var app = builder.Build();
 
@@ -41,6 +46,12 @@ app.UseExceptionHandler(errorApp =>
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
+}
+
+using (var scope = app.Services.CreateScope())
+{
+    var context = scope.ServiceProvider.GetRequiredService<BudgetTrackerContext>();
+    DatabaseSeeder.Seed(context);
 }
 
 app.UseHttpsRedirection();
