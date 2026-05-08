@@ -10,10 +10,11 @@ A full stack budgeting web application built with Vue.js and .NET 10, hosted on 
 |---|---|
 | Frontend | Vue.js 3, TypeScript, Vite |
 | Backend | .NET 10, ASP.NET Core Web API |
+| ORM | Entity Framework Core 10 |
+| Database | Azure SQL Database |
 | Hosting | Azure Static Web Apps (frontend), Azure App Service (backend) |
 | CI/CD | GitHub Actions |
 | Planned: Auth | Azure AD B2C |
-| Planned: Database | Azure SQL |
 | Planned: Banking | Open Banking API (e.g. TrueLayer) |
 
 ---
@@ -29,6 +30,7 @@ graph TD
     subgraph Azure [&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>Azure</b>]
         Frontend["Azure Static Web Apps\n(Vue.js Frontend)"]
         Backend["Azure App Service\n(.NET 10 API)"]
+        Database["Azure SQL Database"]
     end
 
     subgraph GitHub [<b>Github</b>]
@@ -38,9 +40,11 @@ graph TD
 
     User -->|HTTPS| Frontend
     Frontend -->|REST API calls| Backend
+    Backend -->|EF Core| Database
     Repo -->|Push to main| Actions
     Actions -->|Deploy frontend| Frontend
     Actions -->|Deploy backend| Backend
+    Actions -->|Run migrations| Database
 ```
 
 ### Planned
@@ -140,6 +144,7 @@ The UI was designed in Figma before implementation, following a mobile-first app
 ## ✨ Features
 
 ### Current
+- Transactions stored in Azure SQL Database via Entity Framework Core
 - Transactions fetched from backend API and grouped by date
 - Category icons per transaction type using Lucide Vue Next
 - Red/green amount colouring for expenses and income
@@ -148,13 +153,13 @@ The UI was designed in Figma before implementation, following a mobile-first app
 - Table view and line graph view toggle
 - Transaction detail page
 - Vitest unit tests with CI integration via GitHub Actions
+- Database migrations run automatically as part of the CI/CD pipeline
 - Error and loading states handled in the frontend
 
 ### Planned
 - Real bank account integration via Open Banking API (TrueLayer)
 - User authentication via Azure AD B2C
 - Spending breakdown by category
-- Azure SQL database for persistence
 
 ---
 
@@ -164,14 +169,21 @@ The UI was designed in Figma before implementation, following a mobile-first app
 - .NET 10 SDK
 - Node.js 18+
 - npm
+- SQL Server LocalDB (installed with Visual Studio)
+- EF Core CLI tools: `dotnet tool install --global dotnet-ef`
 
 ### Backend
+
 ```bash
 cd backend/BudgetTracker.Api
+dotnet ef database update
 dotnet run
 ```
 
+`dotnet ef database update` creates the local `BudgetTrackerDb` database and runs all migrations. The app will seed it with sample data on first run.
+
 ### Frontend
+
 ```bash
 cd frontend/budget-tracker
 npm install
@@ -188,7 +200,9 @@ Both the frontend and backend are automatically deployed to Azure on every push 
 
 - Frontend: Azure Static Web Apps
 - Backend: Azure App Service
+- Database migrations run automatically in the CI pipeline before deployment
 
 ---
+
 ## 📄 Licence
 MIT
