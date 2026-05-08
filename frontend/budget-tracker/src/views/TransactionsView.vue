@@ -77,8 +77,8 @@ const spendingLabel = computed(() =>
   spendingTotal.value.toLocaleString('en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 )
 
-const dailySpending = computed(() =>
-  transactionGroups.value
+const dailySpending = computed(() => {
+  const dailyTotals = transactionGroups.value
     .map((group) => {
       const date = new Date(group.id)
       if (Number.isNaN(date.getTime())) return null
@@ -94,7 +94,16 @@ const dailySpending = computed(() =>
     })
     .filter((point): point is { day: number; amount: number } => point !== null)
     .sort((a, b) => a.day - b.day)
-)
+
+  let runningTotal = 0
+  return dailyTotals.map((point) => {
+    runningTotal += point.amount
+    return {
+      day: point.day,
+      amount: runningTotal
+    }
+  })
+})
 
 const selectedTransaction = computed(() =>
   allTransactionGroups.value.flatMap((group) => group.transactions).find((tx) => tx.id === selectedTransactionId.value)
