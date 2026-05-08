@@ -172,6 +172,26 @@ The UI was designed in Figma before implementation, following a mobile-first app
 - SQL Server LocalDB (installed with Visual Studio)
 - EF Core CLI tools: `dotnet tool install --global dotnet-ef`
 
+### Environment Variables
+
+#### Frontend (`frontend/budget-tracker/.env.production`)
+
+`VITE_API_URL` is used in production builds to point the frontend to the deployed backend API.
+
+```bash
+VITE_API_URL=https://your-backend-app.azurewebsites.net
+```
+
+In development, the frontend does **not** use `VITE_API_URL`; Vite proxies `/api/*` requests to `http://localhost:5103`.
+
+#### Backend (`backend/BudgetTracker.Api/appsettings*.json` or environment)
+
+Required backend configuration keys:
+- `ConnectionStrings:DefaultConnection`
+- `AllowedOrigins` (comma-separated list; defaults to `http://localhost:5173` when unset)
+
+CI/CD supplies production values through GitHub secrets (for example `ConnectionStrings__DefaultConnection` and `VITE_API_URL`).
+
 ### Backend
 
 ```bash
@@ -190,7 +210,8 @@ npm install
 npm run dev
 ```
 
-The frontend runs on `http://localhost:5173` and the backend on `https://localhost:7259`.
+The frontend runs on `http://localhost:5173`.
+The backend runs on `https://localhost:7259` and `http://localhost:5103`, and the Vite dev proxy uses `http://localhost:5103`.
 
 ---
 
@@ -204,5 +225,102 @@ Both the frontend and backend are automatically deployed to Azure on every push 
 
 ---
 
-## 📄 Licence
+## 🧪 Testing & Validation
+
+### Frontend
+
+```bash
+cd frontend/budget-tracker
+npm run test:run
+npm run build
+```
+
+### Backend
+
+```bash
+cd backend/BudgetTracker.Api
+dotnet build
+```
+
+There is currently no dedicated backend test project in the repository; `dotnet build` is used as the backend CI validation step.
+
+---
+
+## 🔌 API Contract
+
+### `GET /api/transactions`
+
+Returns a list of transactions sorted by date descending.
+
+Example response item:
+
+```json
+{
+  "id": "6f8f7f3a-0e53-4ebf-8e18-2f9f9dd5a2f2",
+  "dateUtc": "2026-05-07T00:00:00Z",
+  "description": "Tesco",
+  "signedAmount": -42.50,
+  "absoluteAmount": 42.50,
+  "type": "expense",
+  "category": "Groceries",
+  "accountName": "Main Current Account",
+  "monthKey": "2026-05",
+  "dateKey": "2026-05-07"
+}
+```
+
+---
+
+## 📁 Project Structure
+
+```text
+BudgetTracker/
+├── frontend/
+│   └── budget-tracker/        # Vue 3 + TypeScript app
+├── backend/
+│   └── BudgetTracker.Api/     # ASP.NET Core API + EF Core
+├── docs/
+│   ├── screenshots/
+│   └── wireframes/
+└── .github/workflows/         # CI/CD pipelines
+```
+
+---
+
+## ⚠️ Current Scope & Limitations
+
+- Single-user style experience; no authentication enforced yet
+- Transactions currently come from seeded/local database data, not live bank feeds
+- Open Banking integration (e.g. TrueLayer) is planned but not implemented
+- Azure AD B2C integration is planned but not implemented
+
+---
+
+## 🛠️ Troubleshooting
+
+- Frontend cannot reach API in development:
+  - Ensure backend is running and listening on `http://localhost:5103`
+  - Ensure frontend is running on `http://localhost:5173` so CORS defaults apply
+- HTTPS certificate warnings on backend:
+  - Run `dotnet dev-certs https --trust` and restart the backend
+- Migration failures locally:
+  - Verify LocalDB is installed and `DefaultConnection` points to a valid SQL Server instance
+  - Re-run `dotnet ef database update` from `backend/BudgetTracker.Api`
+- Production frontend calling wrong API:
+  - Verify `VITE_API_URL` GitHub secret and workflow environment values
+
+---
+
+## 🤝 Contributing
+
+- Create a feature branch (for example `feature/month-summary` or `fix/api-error-state`)
+- Keep PRs focused and small where possible
+- Before pushing, run:
+  - Frontend: `npm run test:run` and `npm run build`
+  - Backend: `dotnet build`
+- Open a PR to `develop` once checks are passing
+
+---
+
+## 📄 License
 MIT
