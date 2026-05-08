@@ -59,8 +59,8 @@ const iconComponent = computed(() => {
     </div>
 
     <div class="min-w-0">
-      <p class="truncate text-[15px] font-medium leading-none text-black">{{ description }}</p>
-      <p class="mt-1 truncate text-[13px] leading-none text-[#706161]">{{ category }}</p>
+      <p class="truncate text-[15px] font-medium leading-tight text-black">{{ description }}</p>
+      <p class="mt-1 truncate text-[13px] leading-tight text-[#706161]">{{ category }}</p>
     </div>
 
     <p :class="['text-[15px] leading-none', amountClass]">{{ amountLabel }}</p>
