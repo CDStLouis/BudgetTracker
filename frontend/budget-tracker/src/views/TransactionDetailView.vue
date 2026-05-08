@@ -6,8 +6,13 @@ import {
   ChevronLeft,
   Clock3,
   CreditCard,
+  Drama,
   Dumbbell,
-  Tag
+  HandCoins,
+  ShoppingBasket,
+  Tag,
+  TramFront,
+  Utensils
 } from 'lucide-vue-next'
 
 interface DetailTransaction {
@@ -46,7 +51,12 @@ const iconBgClass = computed(() =>
 
 const categoryIcon = computed(() => {
   const normalized = props.transaction.category.toLowerCase()
+  if (normalized.includes('grocer')) return ShoppingBasket
+  if (normalized.includes('entertain')) return Drama
   if (normalized.includes('health') || normalized.includes('fitness')) return Dumbbell
+  if (normalized.includes('income')) return HandCoins
+  if (normalized.includes('transport')) return TramFront
+  if (normalized.includes('eat')) return Utensils
   return Tag
 })
 </script>
