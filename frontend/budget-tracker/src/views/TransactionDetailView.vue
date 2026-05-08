@@ -3,7 +3,6 @@ import { computed } from 'vue'
 import {
   BadgePoundSterling,
   Calendar,
-  ChefHat,
   ChevronLeft,
   CircleDollarSign,
   Clock3,
@@ -12,7 +11,8 @@ import {
   Popcorn,
   ShoppingBasket,
   Tag,
-  TramFront
+  TramFront,
+  Utensils
 } from 'lucide-vue-next'
 
 interface DetailTransaction {
@@ -56,7 +56,7 @@ const categoryIcon = computed(() => {
   if (normalized.includes('health') || normalized.includes('fitness')) return Dumbbell
   if (normalized.includes('income')) return CircleDollarSign
   if (normalized.includes('transport')) return TramFront
-  if (normalized.includes('eat')) return ChefHat
+  if (normalized.includes('eat')) return Utensils
   return Tag
 })
 </script>

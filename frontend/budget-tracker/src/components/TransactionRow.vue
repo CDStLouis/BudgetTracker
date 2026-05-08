@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import {
-  ChefHat,
   ChevronRight,
   CircleDollarSign,
   Dumbbell,
   Popcorn,
   ShoppingBasket,
-  TramFront
+  TramFront,
+  Utensils
 } from 'lucide-vue-next'
 
 const props = defineProps<{
@@ -43,7 +43,7 @@ const iconComponent = computed(() => {
   if (normalized.includes('health') || normalized.includes('fitness')) return Dumbbell
   if (normalized.includes('income')) return CircleDollarSign
   if (normalized.includes('transport')) return TramFront
-  if (normalized.includes('eat')) return ChefHat
+  if (normalized.includes('eat')) return Utensils
   return ShoppingBasket
 })
 </script>
