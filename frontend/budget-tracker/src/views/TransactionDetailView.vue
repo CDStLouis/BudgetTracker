@@ -4,10 +4,10 @@ import {
   BadgePoundSterling,
   Calendar,
   ChevronLeft,
-  CircleDollarSign,
   Clock3,
   CreditCard,
   Dumbbell,
+  HandCoins,
   Popcorn,
   ShoppingBasket,
   Tag,
@@ -54,7 +54,7 @@ const categoryIcon = computed(() => {
   if (normalized.includes('grocer')) return ShoppingBasket
   if (normalized.includes('entertain')) return Popcorn
   if (normalized.includes('health') || normalized.includes('fitness')) return Dumbbell
-  if (normalized.includes('income')) return CircleDollarSign
+  if (normalized.includes('income')) return HandCoins
   if (normalized.includes('transport')) return TramFront
   if (normalized.includes('eat')) return Utensils
   return Tag
