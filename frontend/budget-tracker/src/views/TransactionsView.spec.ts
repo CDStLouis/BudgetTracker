@@ -253,3 +253,60 @@ describe('TransactionsView no-data state', () => {
     expect((nextButton.element as HTMLButtonElement).disabled).toBe(true)
   })
 })
+
+describe('TransactionsView loading state', () => {
+  const deferredPayload = [
+    {
+      id: 'tx-1',
+      dateUtc: '2026-01-14T14:30:00.000Z',
+      description: 'Aldi',
+      category: 'Groceries',
+      signedAmount: -40.39,
+      absoluteAmount: 40.39,
+      type: 'expense' as const,
+      accountName: 'Santander',
+      monthKey: '2026-01',
+      dateKey: '2026-01-14'
+    }
+  ]
+
+  afterEach(() => {
+    vi.unstubAllGlobals()
+  })
+
+  it('shows loading UI until fetch resolves, then shows data', async () => {
+    let resolveFetch!: (value: { ok: boolean; json: () => Promise<typeof deferredPayload> }) => void
+    const fetchDeferred = new Promise<{ ok: boolean; json: () => Promise<typeof deferredPayload> }>((resolve) => {
+      resolveFetch = resolve
+    })
+
+    vi.stubGlobal('fetch', vi.fn().mockReturnValue(fetchDeferred))
+
+    const wrapper = await mountTransactionsView()
+
+    expect(wrapper.text()).toContain('Loading…')
+    expect(wrapper.text()).toContain('Loading transactions…')
+    expect(wrapper.text()).not.toContain('No transactions')
+    expect(wrapper.find('[aria-busy="true"]').exists()).toBe(true)
+
+    const tableToggle = wrapper.get('button[aria-label="Table view"]')
+    const graphToggle = wrapper.get('button[aria-label="Graph view"]')
+    expect((tableToggle.element as HTMLButtonElement).disabled).toBe(true)
+    expect((graphToggle.element as HTMLButtonElement).disabled).toBe(true)
+
+    resolveFetch({
+      ok: true,
+      json: async () => deferredPayload
+    })
+
+    await vi.waitFor(() => {
+      expect(wrapper.text()).toContain('Jan 2026')
+      expect(wrapper.text()).toContain('Aldi')
+    })
+
+    expect(wrapper.find('[aria-busy="true"]').exists()).toBe(false)
+    expect(wrapper.text()).not.toContain('Loading transactions…')
+    expect((tableToggle.element as HTMLButtonElement).disabled).toBe(false)
+    expect((graphToggle.element as HTMLButtonElement).disabled).toBe(false)
+  })
+})
