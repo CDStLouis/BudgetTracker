@@ -174,7 +174,7 @@ The UI was designed in Figma before implementation, following a mobile-first app
 
 ### Environment Variables
 
-#### Frontend (`frontend/budget-tracker/.env.production`)
+##### Frontend (`frontend/budget-tracker/.env.production`)
 
 `VITE_API_URL` is used in production builds to point the frontend to the deployed backend API.
 
@@ -184,7 +184,7 @@ VITE_API_URL=https://your-backend-app.azurewebsites.net
 
 In development, the frontend does **not** use `VITE_API_URL`; Vite proxies `/api/*` requests to `http://localhost:5103`.
 
-#### Backend (`backend/BudgetTracker.Api/appsettings*.json` or environment)
+##### Backend (`backend/BudgetTracker.Api/appsettings*.json` or environment)
 
 Required backend configuration keys:
 - `ConnectionStrings:DefaultConnection`
@@ -192,7 +192,7 @@ Required backend configuration keys:
 
 CI/CD supplies production values through GitHub secrets (for example `ConnectionStrings__DefaultConnection` and `VITE_API_URL`).
 
-### Backend
+### Running the Backend
 
 ```bash
 cd backend/BudgetTracker.Api
@@ -202,7 +202,7 @@ dotnet run
 
 `dotnet ef database update` creates the local `BudgetTrackerDb` database and runs all migrations. The app will seed it with sample data on first run.
 
-### Frontend
+### Running the Frontend
 
 ```bash
 cd frontend/budget-tracker
