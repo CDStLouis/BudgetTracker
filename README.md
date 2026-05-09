@@ -221,6 +221,7 @@ The backend runs on `https://localhost:7259` and `http://localhost:5103`, and th
 Both the frontend and backend are automatically deployed to Azure on every push to `main` via GitHub Actions.
 
 - Frontend: Azure Static Web Apps
+- Frontend deployment is gated by `npm run test:run`
 - Backend: Azure App Service
 - Backend deployment is gated by `dotnet test backend/BudgetTracker.Api.Tests --configuration Release`
 - Database migrations run automatically in the CI pipeline before deployment
