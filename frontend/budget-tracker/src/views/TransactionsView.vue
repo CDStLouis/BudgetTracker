@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { LoaderCircle } from 'lucide-vue-next'
 import { computed, onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import MonthSelector from '../components/MonthSelector.vue'
@@ -43,6 +44,7 @@ const route = useRoute()
 const router = useRouter()
 
 const activeView = ref<'table' | 'graph'>('table')
+const isLoadingTransactions = ref(true)
 const allTransactionGroups = ref<TransactionGroup[]>([])
 const availableMonths = ref<Date[]>([])
 const activeMonthIndex = ref(0)
@@ -51,6 +53,7 @@ const canGoToPreviousMonth = computed(() => activeMonthIndex.value < availableMo
 const canGoToNextMonth = computed(() => activeMonthIndex.value > 0)
 
 const monthLabel = computed(() => {
+  if (isLoadingTransactions.value && availableMonths.value.length === 0) return 'Loading…'
   if (!displayedMonth.value) return 'No transactions'
   return displayedMonth.value.toLocaleDateString('en-GB', { month: 'short', year: 'numeric' })
 })
@@ -130,6 +133,7 @@ const formatFullDate = (date: Date) =>
   `${formatDateLabel(date)} ${date.toLocaleDateString('en-GB', { month: 'short', year: 'numeric' })}`
 
 const loadTransactions = async () => {
+  isLoadingTransactions.value = true
   try {
     const response = await fetch(transactionsEndpoint)
     if (!response.ok) throw new Error(`Failed to fetch transactions: ${response.status}`)
@@ -189,6 +193,8 @@ const loadTransactions = async () => {
     availableMonths.value = []
     activeMonthIndex.value = 0
     console.error(error)
+  } finally {
+    isLoadingTransactions.value = false
   }
 }
 
@@ -248,7 +254,7 @@ const onBackFromDetail = () => {
           @next="goToNextMonth"
         />
 
-        <ViewToggle :active-view="activeView" @change="onToggleView" />
+        <ViewToggle :active-view="activeView" :disabled="isLoadingTransactions" @change="onToggleView" />
 
         <div class="rounded-[20px] border border-[#b3a8a8] bg-white px-3 py-2 text-center">
           <p class="text-base font-semibold leading-none text-black">
@@ -258,7 +264,18 @@ const onBackFromDetail = () => {
         </div>
       </div>
 
+      <div
+        v-if="isLoadingTransactions"
+        class="flex flex-1 flex-col items-center justify-center gap-3 py-16"
+        aria-busy="true"
+        aria-live="polite"
+      >
+        <LoaderCircle class="h-10 w-10 animate-spin text-[rgba(35,6,248,0.61)]" aria-hidden="true" />
+        <p class="text-sm font-medium text-[#808080]">Loading transactions…</p>
+      </div>
+
       <TransactionList
+        v-else
         :groups="transactionGroups"
         @select-transaction="onSelectTransaction"
       />

@@ -3,6 +3,7 @@ import { ChartLine, Table2 } from 'lucide-vue-next'
 
 const props = defineProps<{
   activeView: 'table' | 'graph'
+  disabled?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -13,10 +14,14 @@ const baseButtonClass = 'flex h-full w-1/2 items-center justify-center transitio
 </script>
 
 <template>
-  <div class="mx-auto flex h-11 w-fit overflow-hidden rounded-lg border border-[#b3a8a8] bg-[#d2d2d2]">
+  <div
+    class="mx-auto flex h-11 w-fit overflow-hidden rounded-lg border border-[#b3a8a8] bg-[#d2d2d2]"
+    :class="props.disabled ? 'pointer-events-none opacity-50' : ''"
+  >
     <button
       type="button"
       aria-label="Table view"
+      :disabled="props.disabled"
       :class="[
         baseButtonClass,
         'border-r border-[#b3a8a8]',
@@ -32,6 +37,7 @@ const baseButtonClass = 'flex h-full w-1/2 items-center justify-center transitio
     <button
       type="button"
       aria-label="Graph view"
+      :disabled="props.disabled"
       :class="[
         baseButtonClass,
         props.activeView === 'graph'
