@@ -5,6 +5,7 @@ import {
   Drama,
   Dumbbell,
   HandCoins,
+  ShoppingBag,
   ShoppingBasket,
   TramFront,
   Utensils
@@ -38,6 +39,7 @@ const iconWrapperClass = computed(() =>
 const iconComponent = computed(() => {
   const normalized = props.category.toLowerCase()
 
+  if (normalized.includes('shop')) return ShoppingBag
   if (normalized.includes('grocer')) return ShoppingBasket
   if (normalized.includes('entertain')) return Drama
   if (normalized.includes('health') || normalized.includes('fitness')) return Dumbbell

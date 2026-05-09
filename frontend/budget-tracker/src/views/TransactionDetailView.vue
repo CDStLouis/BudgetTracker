@@ -9,8 +9,8 @@ import {
   Drama,
   Dumbbell,
   HandCoins,
+  ShoppingBag,
   ShoppingBasket,
-  Tag,
   TramFront,
   Utensils
 } from 'lucide-vue-next'
@@ -51,13 +51,14 @@ const iconBgClass = computed(() =>
 
 const categoryIcon = computed(() => {
   const normalized = props.transaction.category.toLowerCase()
+  if (normalized.includes('shop')) return ShoppingBag
   if (normalized.includes('grocer')) return ShoppingBasket
   if (normalized.includes('entertain')) return Drama
   if (normalized.includes('health') || normalized.includes('fitness')) return Dumbbell
   if (normalized.includes('income')) return HandCoins
   if (normalized.includes('transport')) return TramFront
   if (normalized.includes('eat')) return Utensils
-  return Tag
+  return ShoppingBasket
 })
 </script>
 
@@ -122,7 +123,7 @@ const categoryIcon = computed(() => {
         <div class="grid grid-cols-[1fr_auto] items-center border-t border-[#b3a8a8] px-[15px] py-3">
           <div class="flex items-center gap-2.5">
             <div class="rounded-[22px] bg-[#dbdee4] p-2.5">
-              <Tag class="h-6 w-6 text-black" />
+              <component :is="categoryIcon" class="h-6 w-6 text-black" />
             </div>
             <p class="text-[15px] font-medium text-[#808080]">Category</p>
           </div>
