@@ -238,11 +238,11 @@ npm run build
 ### Backend
 
 ```bash
-cd backend/BudgetTracker.Api
-dotnet build
+cd backend/BudgetTracker.Api.Tests
+dotnet test
 ```
 
-There is currently no dedicated backend test project in the repository; `dotnet build` is used as the backend CI validation step.
+Backend integration tests now live in `backend/BudgetTracker.Api.Tests` and use xUnit with `Microsoft.AspNetCore.Mvc.Testing` (`WebApplicationFactory`) to validate API behavior.
 
 ---
 
@@ -279,6 +279,7 @@ BudgetTracker/
 │   └── budget-tracker/        # Vue 3 + TypeScript app
 ├── backend/
 │   └── BudgetTracker.Api/     # ASP.NET Core API + EF Core
+│   └── BudgetTracker.Api.Tests/ # xUnit integration tests for API endpoints
 ├── docs/
 │   ├── screenshots/
 │   └── wireframes/
@@ -317,7 +318,7 @@ BudgetTracker/
 - Keep PRs focused and small where possible
 - Before pushing, run:
   - Frontend: `npm run test:run` and `npm run build`
-  - Backend: `dotnet build`
+  - Backend: `dotnet test`
 - Open a PR to `develop` once checks are passing
 
 ---
