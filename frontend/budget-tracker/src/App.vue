@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import TransactionsView from './views/TransactionsView.vue'
+import { RouterView } from 'vue-router'
 </script>
 
 <template>
-  <TransactionsView />
+  <RouterView />
 </template>

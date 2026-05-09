@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import MonthSelector from '../components/MonthSelector.vue'
 import TransactionList from '../components/TransactionList.vue'
 import ViewToggle from '../components/ViewToggle.vue'
@@ -38,10 +39,10 @@ interface ApiTransaction {
 const configuredApiUrl = (import.meta.env.VITE_API_URL as string | undefined)?.replace(/\/+$/, '') ?? ''
 const apiBaseUrl = import.meta.env.DEV ? '' : configuredApiUrl
 const transactionsEndpoint = `${apiBaseUrl}/api/transactions`
+const route = useRoute()
+const router = useRouter()
 
 const activeView = ref<'table' | 'graph'>('table')
-const activeScreen = ref<'transactions' | 'detail'>('transactions')
-const selectedTransactionId = ref<string | null>(null)
 const allTransactionGroups = ref<TransactionGroup[]>([])
 const availableMonths = ref<Date[]>([])
 const activeMonthIndex = ref(0)
@@ -106,7 +107,9 @@ const dailySpending = computed(() => {
 })
 
 const selectedTransaction = computed(() =>
-  allTransactionGroups.value.flatMap((group) => group.transactions).find((tx) => tx.id === selectedTransactionId.value)
+  allTransactionGroups.value
+    .flatMap((group) => group.transactions)
+    .find((tx) => tx.id === (typeof route.params.id === 'string' ? route.params.id : null))
 )
 
 const toOrdinal = (day: number) => {
@@ -202,23 +205,21 @@ const goToNextMonth = () => {
 }
 
 const onSelectTransaction = (id: string) => {
-  selectedTransactionId.value = id
-  activeScreen.value = 'detail'
+  router.push({ name: 'transaction-detail', params: { id } })
 }
 
 const onToggleView = (view: 'table' | 'graph') => {
   activeView.value = view
-  activeScreen.value = 'transactions'
 }
 
 const onBackFromDetail = () => {
-  activeScreen.value = 'transactions'
+  router.push({ name: 'transactions' })
 }
 </script>
 
 <template>
   <TransactionDetailView
-    v-if="activeScreen === 'detail' && selectedTransaction"
+    v-if="typeof route.params.id === 'string' && selectedTransaction"
     :transaction="selectedTransaction"
     @back="onBackFromDetail"
   />

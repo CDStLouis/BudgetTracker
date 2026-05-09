@@ -1,6 +1,26 @@
 import { mount } from '@vue/test-utils'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { createMemoryHistory, createRouter } from 'vue-router'
 import TransactionsView from './TransactionsView.vue'
+
+const mountTransactionsView = async (path = '/transactions') => {
+  const router = createRouter({
+    history: createMemoryHistory(),
+    routes: [
+      { path: '/transactions', component: TransactionsView },
+      { path: '/transactions/:id', component: TransactionsView }
+    ]
+  })
+
+  await router.push(path)
+  await router.isReady()
+
+  return mount(TransactionsView, {
+    global: {
+      plugins: [router]
+    }
+  })
+}
 
 describe('TransactionsView month availability', () => {
   const mockApiResponse = [
@@ -45,7 +65,7 @@ describe('TransactionsView month availability', () => {
   })
 
   it('keeps month navigation disabled and locked to January in table view', async () => {
-    const wrapper = mount(TransactionsView)
+    const wrapper = await mountTransactionsView()
     await vi.waitFor(() => {
       expect(wrapper.text()).toContain('Jan 2026')
     })
@@ -64,7 +84,7 @@ describe('TransactionsView month availability', () => {
   })
 
   it('keeps month navigation disabled after switching to graph view', async () => {
-    const wrapper = mount(TransactionsView)
+    const wrapper = await mountTransactionsView()
     await vi.waitFor(() => {
       expect(wrapper.text()).toContain('Jan 2026')
     })
@@ -121,7 +141,7 @@ describe('TransactionsView month navigation', () => {
   })
 
   it('skips empty months and navigates only through months with data', async () => {
-    const wrapper = mount(TransactionsView)
+    const wrapper = await mountTransactionsView()
     await vi.waitFor(() => {
       expect(wrapper.text()).toContain('May 2026')
       expect(wrapper.text()).toContain('Salary')
@@ -186,7 +206,7 @@ describe('TransactionsView month navigation', () => {
       })
     )
 
-    const wrapper = mount(TransactionsView)
+    const wrapper = await mountTransactionsView()
     await vi.waitFor(() => {
       expect(wrapper.text()).toContain('May 2026')
     })
@@ -221,7 +241,7 @@ describe('TransactionsView no-data state', () => {
   })
 
   it('does not fall back to current month when there are no transactions', async () => {
-    const wrapper = mount(TransactionsView)
+    const wrapper = await mountTransactionsView()
     await vi.waitFor(() => {
       expect(wrapper.text()).toContain('No transactions')
     })
