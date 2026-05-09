@@ -14,8 +14,7 @@ namespace BudgetTracker.Api.Services
                 new Transaction { Id = Guid.NewGuid(), Date = DateTime.Now.AddMonths(-1).AddDays(-14), Description = "Cafe Latte", Amount = -5.60m, Category = "Eating Out", AccountName = "Monzo" },
 
                 // Month -2
-                new Transaction { Id = Guid.NewGuid(), Date = DateTime.Now.AddMonths(-2).AddDays(-6), Description = "Netflix", Amount = -15.99m, Category = "Entertainment", AccountName = "Monzo" },
-                new Transaction { Id = Guid.NewGuid(), Date = DateTime.Now.AddMonths(-2).AddDays(-11), Description = "Electricity", Amount = -68.45m, Category = "Utilities", AccountName = "Santander" },
+                new Transaction { Id = Guid.NewGuid(), Date = DateTime.Now.AddMonths(-2).AddDays(-6), Description = "Netflix", Amount = -15.99m, Category = "Entertainment", AccountName = "Monzo" },                
                 new Transaction { Id = Guid.NewGuid(), Date = DateTime.Now.AddMonths(-2).AddDays(-18), Description = "Trainline", Amount = -4.80m, Category = "Transport", AccountName = "Santander" },
 
                 // Month -3
