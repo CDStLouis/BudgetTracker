@@ -243,7 +243,6 @@ const onBackFromDetail = () => {
   />
 
   <main v-else class="mx-auto flex min-h-screen w-full max-w-md flex-col bg-[#f6f9ff]">
-    <div class="h-14 w-full bg-[rgba(35,6,248,0.15)]" />
     <section class="flex flex-1 flex-col gap-2.5 p-2.5">
       <div class="flex flex-col gap-2.5">
         <MonthSelector
