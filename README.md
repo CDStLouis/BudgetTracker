@@ -153,6 +153,7 @@ The UI was designed in Figma before implementation, following a mobile-first app
 - Table view and line graph view toggle
 - Transaction detail page
 - Vitest unit tests with CI integration via GitHub Actions
+- Backend integration tests for `GET /api/transactions` using xUnit + `WebApplicationFactory`
 - Database migrations run automatically as part of the CI/CD pipeline
 - Error and loading states handled in the frontend
 
@@ -220,7 +221,9 @@ The backend runs on `https://localhost:7259` and `http://localhost:5103`, and th
 Both the frontend and backend are automatically deployed to Azure on every push to `main` via GitHub Actions.
 
 - Frontend: Azure Static Web Apps
+- Frontend deployment is gated by `npm run test:run`
 - Backend: Azure App Service
+- Backend deployment is gated by `dotnet test backend/BudgetTracker.Api.Tests --configuration Release`
 - Database migrations run automatically in the CI pipeline before deployment
 
 ---
@@ -243,6 +246,11 @@ dotnet test
 ```
 
 Backend integration tests now live in `backend/BudgetTracker.Api.Tests` and use xUnit with `Microsoft.AspNetCore.Mvc.Testing` (`WebApplicationFactory`) to validate API behavior.
+Current backend test coverage includes:
+- `GET /api/transactions` returns `200 OK`
+- Returned collection is non-empty and sorted newest-first
+- `signedAmount`, `absoluteAmount`, and `type` mapping is consistent
+- Contract fields such as `id`, `accountName`, `monthKey`, and `dateKey` are populated
 
 ---
 
