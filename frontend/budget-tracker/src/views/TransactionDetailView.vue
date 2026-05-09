@@ -9,6 +9,7 @@ import {
   Drama,
   Dumbbell,
   HandCoins,
+  House,
   ShoppingBag,
   ShoppingBasket,
   TramFront,
@@ -51,6 +52,7 @@ const iconBgClass = computed(() =>
 
 const categoryIcon = computed(() => {
   const normalized = props.transaction.category.toLowerCase()
+  if (normalized.includes('hous')) return House
   if (normalized.includes('shop')) return ShoppingBag
   if (normalized.includes('grocer')) return ShoppingBasket
   if (normalized.includes('entertain')) return Drama
