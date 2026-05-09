@@ -174,7 +174,7 @@ The UI was designed in Figma before implementation, following a mobile-first app
 
 ### Environment Variables
 
-#### Frontend (`frontend/budget-tracker/.env.production`)
+##### Frontend (`frontend/budget-tracker/.env.production`)
 
 `VITE_API_URL` is used in production builds to point the frontend to the deployed backend API.
 
@@ -184,7 +184,7 @@ VITE_API_URL=https://your-backend-app.azurewebsites.net
 
 In development, the frontend does **not** use `VITE_API_URL`; Vite proxies `/api/*` requests to `http://localhost:5103`.
 
-#### Backend (`backend/BudgetTracker.Api/appsettings*.json` or environment)
+##### Backend (`backend/BudgetTracker.Api/appsettings*.json` or environment)
 
 Required backend configuration keys:
 - `ConnectionStrings:DefaultConnection`
@@ -192,7 +192,7 @@ Required backend configuration keys:
 
 CI/CD supplies production values through GitHub secrets (for example `ConnectionStrings__DefaultConnection` and `VITE_API_URL`).
 
-### Backend
+### Running the Backend
 
 ```bash
 cd backend/BudgetTracker.Api
@@ -202,7 +202,7 @@ dotnet run
 
 `dotnet ef database update` creates the local `BudgetTrackerDb` database and runs all migrations. The app will seed it with sample data on first run.
 
-### Frontend
+### Running the Frontend
 
 ```bash
 cd frontend/budget-tracker
@@ -238,11 +238,11 @@ npm run build
 ### Backend
 
 ```bash
-cd backend/BudgetTracker.Api
-dotnet build
+cd backend/BudgetTracker.Api.Tests
+dotnet test
 ```
 
-There is currently no dedicated backend test project in the repository; `dotnet build` is used as the backend CI validation step.
+Backend integration tests now live in `backend/BudgetTracker.Api.Tests` and use xUnit with `Microsoft.AspNetCore.Mvc.Testing` (`WebApplicationFactory`) to validate API behavior.
 
 ---
 
@@ -279,6 +279,7 @@ BudgetTracker/
 │   └── budget-tracker/        # Vue 3 + TypeScript app
 ├── backend/
 │   └── BudgetTracker.Api/     # ASP.NET Core API + EF Core
+│   └── BudgetTracker.Api.Tests/ # xUnit integration tests for API endpoints
 ├── docs/
 │   ├── screenshots/
 │   └── wireframes/
@@ -317,7 +318,7 @@ BudgetTracker/
 - Keep PRs focused and small where possible
 - Before pushing, run:
   - Frontend: `npm run test:run` and `npm run build`
-  - Backend: `dotnet build`
+  - Backend: `dotnet test`
 - Open a PR to `develop` once checks are passing
 
 ---
