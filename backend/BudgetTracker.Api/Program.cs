@@ -69,8 +69,18 @@ if (app.Environment.IsDevelopment())
 
 using (var scope = app.Services.CreateScope())
 {
-    var context = scope.ServiceProvider.GetRequiredService<BudgetTrackerContext>();
-    DatabaseSeeder.Seed(context);
+    var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+    try
+    {
+        var context = scope.ServiceProvider.GetRequiredService<BudgetTrackerContext>();
+        DatabaseSeeder.Seed(context);
+    }
+    catch (Exception ex)
+    {
+        // Don't let a seeding failure crash the whole app on startup;
+        // the API should still come up so /api/transactions can serve whatever is in the DB.
+        logger.LogError(ex, "Database seeding failed during startup.");
+    }
 }
 
 app.UseHttpsRedirection();

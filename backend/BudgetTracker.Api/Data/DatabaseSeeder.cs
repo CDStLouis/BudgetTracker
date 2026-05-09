@@ -6,9 +6,10 @@ namespace BudgetTracker.Api.Data
     {
         public static void Seed(BudgetTrackerContext context)
         {
-            // Clear all existing transactions (for DEMO purposes)
-            context.Transactions.RemoveRange(context.Transactions);
-            context.SaveChanges();
+            if (context.Transactions.Any())
+            {
+                return;
+            }
 
             var transactions = new List<Transaction>
             {
