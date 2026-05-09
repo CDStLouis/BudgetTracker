@@ -24,6 +24,13 @@ builder.Services.AddCors(options =>
 });
 
 builder.Services.AddDbContext<BudgetTrackerContext>(options =>
+{
+    if (builder.Environment.IsEnvironment("Testing"))
+    {
+        options.UseInMemoryDatabase("BudgetTrackerTests");
+        return;
+    }
+
     options.UseSqlServer(
         builder.Configuration.GetConnectionString("DefaultConnection"),
         sqlOptions => sqlOptions.EnableRetryOnFailure(
@@ -31,7 +38,8 @@ builder.Services.AddDbContext<BudgetTrackerContext>(options =>
             maxRetryDelay: TimeSpan.FromSeconds(30),
             errorNumbersToAdd: null
         )
-    ));
+    );
+});
 
 builder.Services.AddResponseCaching();
 

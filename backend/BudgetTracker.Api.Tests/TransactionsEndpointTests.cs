@@ -1,15 +1,14 @@
 using System.Net;
 using System.Net.Http.Json;
 using BudgetTracker.Api.Contracts;
-using Microsoft.AspNetCore.Mvc.Testing;
 
 namespace BudgetTracker.Api.Tests;
 
-public class TransactionsEndpointTests : IClassFixture<WebApplicationFactory<Program>>
+public class TransactionsEndpointTests : IClassFixture<TestWebApplicationFactory>
 {
     private readonly HttpClient _client;
 
-    public TransactionsEndpointTests(WebApplicationFactory<Program> factory)
+    public TransactionsEndpointTests(TestWebApplicationFactory factory)
     {
         _client = factory.CreateClient();
     }
